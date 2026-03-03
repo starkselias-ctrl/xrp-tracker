@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Map, Shield, BookOpen, Clock, Bell, Activity } from 'lucide-react'
+import { LayoutDashboard, Map, Shield, BookOpen, Clock, Bell } from 'lucide-react'
 import { currentScore } from '../../data/score'
 import RadialArc from '../ui/RadialArc'
 import { useLiveData } from '../../context/LiveDataContext'
@@ -11,7 +11,6 @@ const nav = [
   { to: '/thesis',    label: 'Thesis Health', icon: Shield },
   { to: '/timeline',  label: 'Timeline',      icon: Clock },
   { to: '/alerts',    label: 'Alerts',        icon: Bell },
-  { to: '/live',      label: 'Live Tracker',  icon: Activity },
 ]
 
 export default function Sidebar() {

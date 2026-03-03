@@ -7,8 +7,6 @@ import Thesis from './pages/Thesis'
 import Timeline from './pages/Timeline'
 import Alerts from './pages/Alerts'
 import MetricDrilldown from './pages/MetricDrilldown'
-import LiveTracker from './pages/LiveTracker'
-
 export default function App() {
   return (
     <BrowserRouter>
@@ -21,7 +19,6 @@ export default function App() {
           <Route path="thesis" element={<Thesis />} />
           <Route path="timeline" element={<Timeline />} />
           <Route path="alerts" element={<Alerts />} />
-          <Route path="live" element={<LiveTracker />} />
         </Route>
       </Routes>
     </BrowserRouter>
