@@ -1,271 +1,54 @@
-@import "tailwindcss";
-
-/* ─── Design tokens ──────────────────────────────────────────── */
 :root {
-  /* === VOID BASE === */
-  --void: oklch(0.10 0.006 60);
-
-  /* === PANEL LEVELS (solid, no blur) === */
-  --glass-1: oklch(0.13 0.007 60);
-  --glass-2: oklch(0.17 0.008 60);
-  --glass-3: oklch(0.21 0.009 60);
-  --glass-4: oklch(0.25 0.010 60);
-
-  /* === LEGACY SURFACE ALIASES === */
-  --bg-base:    oklch(0.13 0.007 60);
-  --bg-subtle:  oklch(0.13 0.007 60);
-  --bg-surface: oklch(0.17 0.008 60);
-  --bg-raised:  oklch(0.21 0.009 60);
-  --bg-overlay: oklch(0.25 0.010 60);
-
-  /* === SHADOW SYSTEM === */
-  --shadow-1: 0 2px 8px oklch(0 0 0 / 0.45);
-  --shadow-2: 0 4px 16px oklch(0 0 0 / 0.40), inset 0 1px 0 oklch(0.78 0.17 72 / 0.08);
-  --shadow-3: 0 8px 28px oklch(0 0 0 / 0.45), inset 0 1px 0 oklch(0.78 0.17 72 / 0.10);
-  --shadow-4: 0 16px 48px oklch(0 0 0 / 0.55), inset 0 1px 0 oklch(0.78 0.17 72 / 0.12);
-  --shadow-inset: inset 0 2px 8px oklch(0 0 0 / 0.35), inset 0 1px 0 oklch(0 0 0 / 0.15);
-
-  /* === BORDERS (amber-tinted, actually visible) === */
-  --border:        oklch(0.78 0.17 72 / 0.25);
-  --border-mid:    oklch(0.78 0.17 72 / 0.40);
-  --border-active: oklch(0.78 0.17 72 / 0.55);
-  --border-strong: oklch(0.78 0.17 72 / 0.70);
-
-  /* === TEXT === */
-  --text-1: oklch(0.95 0.008 72);
-  --text-2: oklch(0.80 0.010 72);
-  --text-3: oklch(0.62 0.010 72);
-  --text-4: oklch(0.58 0.13 72);
-
-  /* === DATA COLORS === */
-  --positive:        oklch(0.72 0.19 145);
-  --positive-dim:    oklch(0.72 0.19 145 / 0.60);
-  --positive-tint:   oklch(0.72 0.19 145 / 0.10);
-  --positive-border: oklch(0.72 0.19 145 / 0.30);
-  --positive-glow:   oklch(0.72 0.19 145 / 0.28);
-
-  --neutral:        oklch(0.78 0.17 70);
-  --neutral-dim:    oklch(0.78 0.17 70 / 0.60);
-  --neutral-tint:   oklch(0.78 0.17 70 / 0.10);
-  --neutral-border: oklch(0.78 0.17 70 / 0.30);
-  --neutral-glow:   oklch(0.78 0.17 70 / 0.28);
-
-  --negative:        oklch(0.65 0.22 25);
-  --negative-dim:    oklch(0.65 0.22 25 / 0.60);
-  --negative-tint:   oklch(0.65 0.22 25 / 0.10);
-  --negative-border: oklch(0.65 0.22 25 / 0.30);
-  --negative-glow:   oklch(0.65 0.22 25 / 0.28);
-
-  /* === PHOSPHOR AMBER (primary UI chrome) === */
-  --live:        oklch(0.78 0.17 72);
-  --live-dim:    oklch(0.78 0.17 72 / 0.60);
-  --live-tint:   oklch(0.78 0.17 72 / 0.10);
-  --live-border: oklch(0.78 0.17 72 / 0.32);
-  --live-glow:   oklch(0.78 0.17 72 / 0.35);
-
-  /* === XP / MACRO (blue-purple, kept distinct from amber chrome) === */
-  --macro:        oklch(0.65 0.22 278);
-  --macro-dim:    oklch(0.65 0.22 278 / 0.60);
-  --macro-tint:   oklch(0.65 0.22 278 / 0.10);
-  --macro-border: oklch(0.65 0.22 278 / 0.30);
-  --macro-glow:   oklch(0.65 0.22 278 / 0.28);
-
-  /* === LEGACY ALIASES === */
-  --accent:        var(--live);
-  --accent-tint:   var(--live-tint);
-  --accent-border: var(--live-border);
-  --xp:            var(--macro);
-  --xp-tint:       var(--macro-tint);
-  --xp-border:     var(--macro-border);
-  --success:        var(--positive);
-  --success-tint:   var(--positive-tint);
-  --success-border: var(--positive-border);
-  --warning:        var(--neutral);
-  --warning-tint:   var(--neutral-tint);
-  --warning-border: var(--neutral-border);
-  --danger:         var(--negative);
-  --danger-tint:    var(--negative-tint);
-  --danger-border:  var(--negative-border);
-
-  /* === FONTS === */
-  --font:      'Inter var', system-ui, -apple-system, sans-serif;
-  --font-data: 'DM Mono', 'SF Mono', 'Fira Code', monospace;
-
-  /* === MOTION === */
-  --ease-silk:  cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --ease-snap:  cubic-bezier(0.40, 0.00, 0.20, 1.00);
-  --ease-float: cubic-bezier(0.30, 1.10, 0.60, 1.00);
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #1c2128;
+  --bg-hover: #21262d;
+  --border: #30363d;
+  --border-light: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #656d76;
+  --accent: #00aef9;
+  --accent-dim: rgba(0, 174, 249, 0.12);
+  --accent-glow: rgba(0, 174, 249, 0.25);
+  --green: #3fb950;
+  --green-dim: rgba(63, 185, 80, 0.15);
+  --red: #f85149;
+  --red-dim: rgba(248, 81, 73, 0.15);
+  --gold: #d4a72c;
+  --gold-dim: rgba(212, 167, 44, 0.15);
+  --purple: #a371f7;
+  --purple-dim: rgba(163, 113, 247, 0.15);
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --radius: 8px;
+  --radius-lg: 12px;
 }
 
-/* ─── Tailwind theme bridge ──────────────────────────────────── */
-@theme inline {
-  --color-base:    var(--bg-base);
-  --color-subtle:  var(--bg-subtle);
-  --color-surface: var(--bg-surface);
-  --color-raised:  var(--bg-raised);
-  --color-overlay: var(--bg-overlay);
-  --color-border:  var(--border);
-  --color-text-1:  var(--text-1);
-  --color-text-2:  var(--text-2);
-  --color-text-3:  var(--text-3);
-  --color-text-4:  var(--text-4);
-  --color-accent:  var(--accent);
-  --color-xp:      var(--xp);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-danger:  var(--danger);
-  --font-sans:     var(--font);
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* ─── Base ───────────────────────────────────────────────────── */
-@layer base {
-  *, *::before, *::after { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-
-  html {
-    /* Amber phosphor glow at top, deep void base */
-    background:
-      radial-gradient(ellipse 100% 40% at 50% -5%, oklch(0.78 0.17 72 / 0.12) 0%, transparent 70%),
-      var(--void);
-    background-attachment: fixed;
-    color: var(--text-1);
-    font-family: var(--font);
-    font-feature-settings: 'cv11', 'ss01';
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* Global CRT scanline overlay — fixed, covers everything */
-  html::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9999;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent,              transparent 2px,
-      oklch(0 0 0 / 0.05) 2px, oklch(0 0 0 / 0.05) 3px
-    );
-  }
-
-  #root { min-height: 100vh; }
-
-  .num  { font-variant-numeric: tabular-nums; }
-  .mono {
-    font-family: var(--font-data);
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 0 10px currentColor;
-  }
-
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: oklch(0.78 0.17 72 / 0.22); border-radius: 2px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--live); }
-
-  :focus-visible {
-    outline: 1px solid var(--live);
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
+html, body, #root {
+  height: 100%;
 }
 
-/* ─── Panel utilities (solid, terminal-style) ────────────────── */
-/* "glass" class names kept for compat — panels are now solid */
-.g1 {
-  background: var(--glass-1);
-  box-shadow: var(--shadow-1);
-}
-.g2 {
-  background: var(--glass-2);
-  box-shadow: var(--shadow-2);
-}
-.g3 {
-  background: var(--glass-3);
-  box-shadow: var(--shadow-3);
-}
-.g4 {
-  background: var(--glass-4);
-  box-shadow: var(--shadow-4);
+body {
+  font-family: var(--font);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }
 
-/* ─── Inset data well ────────────────────────────────────────── */
-.inset-well {
-  background: oklch(0 0 0 / 0.20);
-  box-shadow: var(--shadow-inset);
-  border-radius: 4px;
-}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-/* ─── Scanning divider ───────────────────────────────────────── */
-.scan-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, oklch(0.78 0.17 72 / 0.22) 20%, oklch(0.78 0.17 72 / 0.22) 80%, transparent);
-  border: none; margin: 0;
-}
-
-/* ─── Scanline overlay (per-element, on top of charts etc.) ──── */
-.scanline {
-  position: absolute; inset: 0;
-  pointer-events: none; border-radius: inherit; z-index: 1;
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent,              transparent 2px,
-    oklch(0 0 0 / 0.06) 2px, oklch(0 0 0 / 0.06) 3px
-  );
-}
-
-/* ─── Micro-grid ─────────────────────────────────────────────── */
-.micro-grid {
-  background-image:
-    linear-gradient(oklch(0.78 0.17 72 / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.78 0.17 72 / 0.05) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-/* ─── Card hover lift ────────────────────────────────────────── */
-.card-lift {
-  transition: transform 200ms var(--ease-snap), box-shadow 200ms var(--ease-snap);
-  will-change: transform;
-}
-.card-lift:hover { transform: translateY(-2px); box-shadow: var(--shadow-3); }
-
-/* ─── Phosphor glow on data text ─────────────────────────────── */
-[style*="--font-data"], [style*="font-data"] {
-  text-shadow: 0 0 12px currentColor;
-}
-
-/* ─── Animations ─────────────────────────────────────────────── */
-@keyframes shimmer {
-  from { transform: translateX(-200%); }
-  to   { transform: translateX(300%); }
-}
-@keyframes badge-pop {
-  0%  { transform: scale(0.75); opacity: 0; }
-  65% { transform: scale(1.05); }
-  100%{ transform: scale(1);    opacity: 1; }
-}
-@keyframes page-enter {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulse-live {
-  0%, 100% { box-shadow: 0 0 0 0 var(--live-border); }
-  50%       { box-shadow: 0 0 0 4px transparent; }
-}
-@keyframes phosphor-flicker {
-  0%, 100% { opacity: 1; }
-  92%       { opacity: 0.97; }
-  94%       { opacity: 1; }
-  96%       { opacity: 0.98; }
-}
-
-/* ─── Utility classes ────────────────────────────────────────── */
-.xp-shimmer   { animation: shimmer 2.6s cubic-bezier(0.4,0,0.6,1) infinite; }
-.badge-pop    { animation: badge-pop 0.45s var(--ease-float) forwards; }
-.fade-up      { animation: fade-up 0.3s var(--ease-silk) both; }
-.page-enter   { animation: page-enter 0.22s var(--ease-silk) both; }
-.pulse-live   { animation: pulse-live 3s ease-in-out infinite; }
-.phos-flicker { animation: phosphor-flicker 8s ease-in-out infinite; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: var(--font); border: none; background: none; }
+textarea, input { font-family: var(--font); }
