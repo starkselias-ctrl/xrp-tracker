@@ -382,12 +382,12 @@ export default function Home() {
 
         {/* ── CENTER: Chart + Analyzer ──────────────────────────────── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, overflow: 'hidden', minHeight: 0 }}>
-          {/* Chart — takes remaining space */}
-          <div style={{ flex: 1, minHeight: 0 }}>
+          {/* Chart — compact fixed height */}
+          <div style={{ flex: '0 0 260px' }}>
             <PriceChart />
           </div>
-          {/* Analyzer — fixed height */}
-          <div style={{ flex: '0 0 258px' }}>
+          {/* Analyzer — takes remaining space */}
+          <div style={{ flex: 1, minHeight: 0 }}>
             <MacroAnalyzer
               pendingEvent={pendingEvent}
               onClearPending={() => setPendingEvent(null)}
