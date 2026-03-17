@@ -24,9 +24,7 @@ export function NewsPanel({ onAnalyze }) {
     setError(null)
     try {
       const cat = TABS[tab].categories
-      const res = await fetch(
-        `https://min-api.cryptocompare.com/data/v2/news/?lang=EN&categories=${encodeURIComponent(cat)}&sortOrder=latest&extraParams=xrp-tracker`
-      )
+      const res = await fetch(`/api/news?categories=${encodeURIComponent(cat)}`)
       const json = await res.json()
       if (Array.isArray(json.Data)) {
         setArticles(json.Data.slice(0, 20))
