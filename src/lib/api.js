@@ -131,3 +131,157 @@ export async function fetchAllMetrics() {
   const fast = await fetchFastMetrics()
   return fast
 }
+
+// Group a CoinGecko [timestamp, value] series into ISO-week buckets (keyed by Monday date string)
+function groupCgToWeeks(series) {
+  if (!Array.isArray(series)) return {}
+  const weeks = {}
+  for (const [ts, val] of series) {
+    const date = new Date(ts)
+    const day = date.getUTCDay()
+    const monday = new Date(date)
+    monday.setUTCDate(date.getUTCDate() - (day === 0 ? 6 : day - 1))
+    monday.setUTCHours(0, 0, 0, 0)
+    const key = monday.toISOString().slice(0, 10)
+    if (!weeks[key]) weeks[key] = []
+    weeks[key].push(val)
+  }
+  return Object.fromEntries(
+    Object.entries(weeks).map(([k, vals]) => [k, {
+      start: vals[0],
+      end: vals[vals.length - 1],
+      avg: vals.reduce((a, b) => a + b, 0) / vals.length,
+    }])
+  )
+}
+
+// Group a DefiLlama [{date (unix seconds), totalLiquidityUSD}] TVL series into weekly buckets
+function groupLlamaTvlToWeeks(tvlArray) {
+  if (!Array.isArray(tvlArray)) return {}
+  const weeks = {}
+  for (const entry of tvlArray) {
+    const ts = (entry.date ?? 0) * 1000
+    const val = entry.totalLiquidityUSD ?? entry.tvl ?? 0
+    const date = new Date(ts)
+    const day = date.getUTCDay()
+    const monday = new Date(date)
+    monday.setUTCDate(date.getUTCDate() - (day === 0 ? 6 : day - 1))
+    monday.setUTCHours(0, 0, 0, 0)
+    const key = monday.toISOString().slice(0, 10)
+    if (!weeks[key]) weeks[key] = []
+    weeks[key].push(val)
+  }
+  return Object.fromEntries(
+    Object.entries(weeks).map(([k, vals]) => [k, {
+      start: vals[0],
+      end: vals[vals.length - 1],
+      avg: vals.reduce((a, b) => a + b, 0) / vals.length,
+    }])
+  )
+}
+
+// Group a DefiLlama totalDataChart [[timestamp (unix seconds), value]] into weekly buckets
+function groupLlamaChartToWeeks(chart) {
+  if (!Array.isArray(chart)) return {}
+  const weeks = {}
+  for (const [ts, val] of chart) {
+    const date = new Date(ts * 1000)
+    const day = date.getUTCDay()
+    const monday = new Date(date)
+    monday.setUTCDate(date.getUTCDate() - (day === 0 ? 6 : day - 1))
+    monday.setUTCHours(0, 0, 0, 0)
+    const key = monday.toISOString().slice(0, 10)
+    if (!weeks[key]) weeks[key] = []
+    weeks[key].push(val)
+  }
+  return Object.fromEntries(
+    Object.entries(weeks).map(([k, vals]) => [k, {
+      start: vals[0],
+      end: vals[vals.length - 1],
+      avg: vals.reduce((a, b) => a + b, 0) / vals.length,
+    }])
+  )
+}
+
+const TIMELINE_CACHE_KEY = 'xrt_timeline_v1'
+const TIMELINE_TTL = 60 * 60 * 1000 // 1 hour
+
+/**
+ * Fetch weekly historical snapshots for the Timeline.
+ * Returns array of weeks (newest first), each with:
+ *   { week, label, xrp_start, xrp_end, rlusd_mcap_start, rlusd_mcap_end,
+ *     amm_tvl_start, amm_tvl_end, dex_vol_avg }
+ */
+export async function fetchWeeklyHistory(numWeeks = 8) {
+  // Check cache
+  try {
+    const c = JSON.parse(localStorage.getItem(TIMELINE_CACHE_KEY) ?? 'null')
+    if (c && Date.now() - c.ts < TIMELINE_TTL) return c.data
+  } catch {}
+
+  const [cgXrp, cgRlusd, llamaProtocol, llamaDex] = await Promise.allSettled([
+    get(`${CG}/coins/ripple/market_chart?vs_currency=usd&days=90`),
+    get(`${CG}/coins/ripple-usd/market_chart?vs_currency=usd&days=90`),
+    get(`${LLAMA}/protocol/xrpl-dex`),
+    get(`${LLAMA}/summary/dexs/xrpl-dex?dataType=dailyVolume`),
+  ])
+
+  const xrpWeeks    = cgXrp.status    === 'fulfilled' ? groupCgToWeeks(cgXrp.value?.prices)         : {}
+  const rlusdWeeks  = cgRlusd.status  === 'fulfilled' ? groupCgToWeeks(cgRlusd.value?.market_caps)  : {}
+  const tvlWeeks    = llamaProtocol.status === 'fulfilled'
+    ? groupLlamaTvlToWeeks(llamaProtocol.value?.tvl ?? llamaProtocol.value?.chainTvls?.XRPL?.tvl ?? [])
+    : {}
+  const dexWeeks    = llamaDex.status === 'fulfilled'
+    ? groupLlamaChartToWeeks(llamaDex.value?.totalDataChart ?? [])
+    : {}
+
+  // Collect all week keys, sort descending, take last N complete weeks
+  const allKeys = [...new Set([
+    ...Object.keys(xrpWeeks),
+    ...Object.keys(rlusdWeeks),
+    ...Object.keys(tvlWeeks),
+    ...Object.keys(dexWeeks),
+  ])].sort().reverse()
+
+  // Skip the current (incomplete) week — it's the first key if today isn't Sunday
+  const today = new Date()
+  const todayDay = today.getUTCDay()
+  const thisMonday = new Date(today)
+  thisMonday.setUTCDate(today.getUTCDate() - (todayDay === 0 ? 6 : todayDay - 1))
+  thisMonday.setUTCHours(0, 0, 0, 0)
+  const thisMondayKey = thisMonday.toISOString().slice(0, 10)
+
+  const weeks = allKeys
+    .filter(k => k < thisMondayKey) // only complete weeks
+    .slice(0, numWeeks)
+
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+  const result = weeks.map(mondayKey => {
+    const d = new Date(mondayKey + 'T00:00:00Z')
+    const label = `Week of ${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`
+
+    const xrp   = xrpWeeks[mondayKey]
+    const rlusd = rlusdWeeks[mondayKey]
+    const tvl   = tvlWeeks[mondayKey]
+    const dex   = dexWeeks[mondayKey]
+
+    return {
+      week: mondayKey,
+      label,
+      xrp_start:        xrp   ? +xrp.start.toFixed(4)                    : null,
+      xrp_end:          xrp   ? +xrp.end.toFixed(4)                      : null,
+      rlusd_mcap_start: rlusd ? +(rlusd.start / 1e6).toFixed(1)          : null,
+      rlusd_mcap_end:   rlusd ? +(rlusd.end   / 1e6).toFixed(1)          : null,
+      amm_tvl_start:    tvl   ? +(tvl.start   / 1e6).toFixed(2)          : null,
+      amm_tvl_end:      tvl   ? +(tvl.end     / 1e6).toFixed(2)          : null,
+      dex_vol_avg:      dex   ? +(dex.avg     / 1e6).toFixed(2)          : null,
+    }
+  })
+
+  try {
+    localStorage.setItem(TIMELINE_CACHE_KEY, JSON.stringify({ data: result, ts: Date.now() }))
+  } catch {}
+
+  return result
+}
