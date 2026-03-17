@@ -28,10 +28,10 @@ export function NewsPanel({ onAnalyze }) {
         `https://min-api.cryptocompare.com/data/v2/news/?lang=EN&categories=${encodeURIComponent(cat)}&sortOrder=latest&extraParams=xrp-tracker`
       )
       const json = await res.json()
-      if (json.Data) {
+      if (Array.isArray(json.Data)) {
         setArticles(json.Data.slice(0, 20))
       } else {
-        throw new Error('No data returned from news API')
+        throw new Error(json.Message || 'No data returned from news API')
       }
     } catch (e) {
       setError('Could not load news. ' + e.message)
